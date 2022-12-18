@@ -11,8 +11,8 @@
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
 
 /*Put your SSID & Password*/
-const char* ssid = "Galaxy S10 Lite23a8";  // Enter SSID here
-const char* password = "xdds4510";  //Enter Password here
+const char* ssid = "your_ssid";  // Enter SSID here
+const char* password = "your_password";  //Enter Password here
 
 ESP8266WebServer server(80); // Initialize the web server
 DHT dht(DHTPIN, DHTTYPE); // Initialize DHT sensor
@@ -74,7 +74,7 @@ void setup(){
   server.onNotFound(handle_NotFound);
 
   server.begin();
-  pzemSerial.println("HTTP server started");
+  pzemSerial.println("HTTP server started.");
   
 }
 void loop() {
