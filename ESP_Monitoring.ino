@@ -11,8 +11,8 @@
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
 
 /*Put your SSID & Password*/
-const char* ssid = "your_ssid";  // Enter SSID here
-const char* password = "your_password";  //Enter Password here
+const char* ssid = "Samsung Galaxy A32";  // Enter SSID here
+const char* password = "1234567x";  //Enter Password here
 
 ESP8266WebServer server(80); // Initialize the web server
 DHT dht(DHTPIN, DHTTYPE); // Initialize DHT sensor
@@ -25,6 +25,9 @@ float hum;
 float _voltage;
 float _current;
 float _power;
+float _energy;
+float _frequency;
+float _pf;
 int light;
 int hr;
 int mnt;
@@ -74,7 +77,7 @@ void setup(){
   server.onNotFound(handle_NotFound);
 
   server.begin();
-  pzemSerial.println("HTTP server started.");
+  pzemSerial.println("HTTP server started");
   
 }
 void loop() {
@@ -114,7 +117,11 @@ void handle_OnConnect() {
   hr = jetzt.hour();
   mnt = jetzt.minute();
   sec = jetzt.second();
-  if(hr == 17 && mnt > 50 && mnt < 55){
+  /*if(hr == 17 && mnt > 50 && mnt < 55){
+    engineRelay = "ON";
+    digitalWrite(enginePin, HIGH);
+    }*/
+  if(hr >= 8 && hr < 10){
     engineRelay = "ON";
     digitalWrite(enginePin, HIGH);
     }
@@ -122,21 +129,24 @@ void handle_OnConnect() {
     engineRelay = "OFF";
     digitalWrite(enginePin, LOW);
     }
-  
+    
   //power monitoring
   _voltage = pzem.voltage();
   _current = pzem.current();
   _power = pzem.power();
+  _energy = pzem.energy();
+  _frequency = pzem.frequency();
+  _pf = pzem.pf();
 
   //transmitting data to the server
-  server.send(200, "text/html", SendHTML(temp, hum, light, lampRelay, fanRelay, engineRelay, _voltage, _current, _power)); 
+  server.send(200, "text/html", SendHTML(temp, hum, light, lampRelay, fanRelay, engineRelay, _voltage, _current, _power, _energy, _frequency, _pf, hr, mnt, sec)); 
 }
 
 void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
 }
 
-String SendHTML(float tempStat, float humStat, int lightStat, String relayOne, String relayTwo, String relayThree, float voltStat, float currStat, float powerStat){
+String SendHTML(float tempStat, float humStat, int lightStat, String relayOne, String relayTwo, String relayThree, float voltStat, float currStat, float powerStat, float energyStat, float freqStat, float pfStat, int hr_, int mnt_, int sec_){
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta http-equiv=\"refresh\" content=\"5\" name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
   ptr +="<title>Mini Server Monitoring</title>\n";
@@ -176,6 +186,22 @@ String SendHTML(float tempStat, float humStat, int lightStat, String relayOne, S
   ptr +="<p>Power: ";
   ptr +=powerStat;
   ptr +="W</p>";
+  ptr +="<p>Energy: ";
+  ptr +=energyStat;
+  ptr +="kWh</p>";
+  ptr +="<p>Frequency: ";
+  ptr +=freqStat;
+  ptr +="Hz</p>";
+  ptr +="<p>Power Factor: ";
+  ptr +=pfStat;
+  ptr +="</p>";
+  ptr +="<p>Time: ";
+  ptr +=hr_;
+  ptr +=":";
+  ptr +=mnt_;
+  ptr +=":";
+  ptr +=sec_;
+  ptr +="</p>";
   
   ptr +="</div>\n";
   ptr +="</body>\n";
