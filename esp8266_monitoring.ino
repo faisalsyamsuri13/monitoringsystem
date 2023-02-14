@@ -54,7 +54,7 @@ void setup(){
   //RTC setup
   Wire.begin(5, 4); //(SDA(D1), SCL(D2))
   rtc.begin();
-  //rtc.adjust(DateTime(F(__DATE__),F(__TIME__)));
+  //rtc.adjust(DateTime(F(__DATE__),F(__TIME__))); //use code for time adjustment only, deactivate this code after adjustment
   
   pzemSerial.println("Connecting to ");
   pzemSerial.println(ssid);
