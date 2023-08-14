@@ -90,27 +90,27 @@ void handle_OnConnect() {
   
   //temperature control
   temp = dht.readTemperature(); // Gets the values of the temperature
-  if(temp > 18.00){
+  /*if(temp > 18.00){
     fanRelay = "ON";
     digitalWrite(fanPin, HIGH);
     }
   else {
     fanRelay = "OFF";
     digitalWrite(fanPin, LOW);
-    }
+    }*/
   hum = dht.readHumidity(); // Gets the values of the humidity
 
   //light control
   inputLight = analogRead(A0); //A0 ESP pin
   light = 100.00 - (100.00*((float)inputLight/1024.00));
-  if(inputLight > 512){
+  /*if(inputLight > 512){
     lampRelay = "ON";
     digitalWrite(lampPin, HIGH);
     }
   else {
     lampRelay = "OFF";
     digitalWrite(lampPin, LOW);
-    }
+    }*/
 
   //rtc control
   DateTime jetzt = rtc.now();
@@ -124,14 +124,34 @@ void handle_OnConnect() {
   if(hr >= 8 && hr < 12){
     engineRelay = "ON";
     digitalWrite(enginePin, HIGH);
+    if(temp > 18.00){
+     fanRelay = "ON";
+     digitalWrite(fanPin, HIGH);
+    }
+    if(inputLight > 512){
+    lampRelay = "ON";
+    digitalWrite(lampPin, HIGH);
+    }
     }
   else if(hr >= 13 && hr < 17){
     engineRelay = "ON";
     digitalWrite(enginePin, HIGH);
+    if(temp > 18.00){
+     fanRelay = "ON";
+     digitalWrite(fanPin, HIGH);
+    }
+    if(inputLight > 512){
+    lampRelay = "ON";
+    digitalWrite(lampPin, HIGH);
+    }
     }
   else{
     engineRelay = "OFF";
+    fanRelay = "OFF";
+    lampRelay = "OFF";
     digitalWrite(enginePin, LOW);
+    digitalWrite(fanRelay, LOW);
+    digitalWrite(lampRelay, LOW);
     }
     
   //power monitoring
